@@ -1,6 +1,7 @@
 package practice;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.IntStream;
 import model.Candidate;
 import model.Cat;
@@ -20,7 +21,8 @@ public class StreamPractice {
                 .map(Integer::valueOf)
                 .filter(num -> num % 2 == 0)
                 .min(Integer::compare)
-                .orElseThrow(() -> new RuntimeException("Can't get min value from list: " + numbers));
+                .orElseThrow(() ->
+                        new RuntimeException("Can't get min value from list: " + numbers));
     }
 
     /**
@@ -67,26 +69,30 @@ public class StreamPractice {
      */
     public List<Person> getWorkablePeople(int fromAge, int femaleToAge,
                                           int maleToAge, List<Person> peopleList) {
-        List<Person> workablePeople = new ArrayList<>();
-        peopleList.forEach(person -> {
+        return peopleList.stream()
+                .filter(person -> {
                     int age = person.getAge();
                     if (age < fromAge) {
-                        return;
+                        return false;
                     }
                     switch (person.getSex()) {
                         case MAN:
                             if (age <= maleToAge) {
-                                workablePeople.add(person);
-                                break;
+                                return true;
                             }
+                            break;
                         case WOMAN:
                             if (age <= femaleToAge) {
-                                workablePeople.add(person);
-                                break;
+                                return true;
                             }
+                            break;
+                        default:
+                            return false;
                     }
-                });
-        return workablePeople;
+                    return false;
+                })
+                .toList();
+
     }
 
     /**
