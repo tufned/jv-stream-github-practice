@@ -2,6 +2,7 @@ package practice;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
 import model.Candidate;
 import model.Cat;
@@ -31,14 +32,12 @@ public class StreamPractice {
      * But before that subtract 1 from each element on an odd position (having the odd index).
      */
     public Double getOddNumsAverage(List<Integer> numbers) {
-        IntStream.range(0, numbers.size())
-                .filter(index -> index % 2 != 0)
-                .forEach(index -> numbers.set(index, numbers.get(index) - 1));
-        return numbers.stream()
-                .filter(elem -> elem % 2 != 0)
+        return IntStream.range(0, numbers.size())
+                .mapToObj(i -> i % 2 == 1 ? numbers.get(i) - 1 : numbers.get(i))
+                .filter(n -> n % 2 != 0)
                 .mapToInt(e -> e)
                 .average()
-                .orElseThrow();
+                .orElseThrow(NoSuchElementException::new);
     }
 
     /**
@@ -70,27 +69,9 @@ public class StreamPractice {
     public List<Person> getWorkablePeople(int fromAge, int femaleToAge,
                                           int maleToAge, List<Person> peopleList) {
         return peopleList.stream()
-                .filter(person -> {
-                    int age = person.getAge();
-                    if (age < fromAge) {
-                        return false;
-                    }
-                    switch (person.getSex()) {
-                        case MAN:
-                            if (age <= maleToAge) {
-                                return true;
-                            }
-                            break;
-                        case WOMAN:
-                            if (age <= femaleToAge) {
-                                return true;
-                            }
-                            break;
-                        default:
-                            return false;
-                    }
-                    return false;
-                })
+                .filter(p -> p.getSex() == Person.Sex.WOMAN
+                        ? p.getAge() >= fromAge && p.getAge() <= femaleToAge
+                        : p.getAge() >= fromAge && p.getAge() <= maleToAge)
                 .toList();
 
     }
